@@ -17,7 +17,7 @@ public final class AccountContract {
 		
 		public static final String SQL_CREATE_ENTRIES = "CREATE TABLE " +
 		AccountEntry.TABLE_NAME + " ( " +
-		AccountEntry.COLUMN_NAME_ACCOUNT_NO + " STRING PRIMARY KEY" +
+		AccountEntry.COLUMN_NAME_ACCOUNT_NO + " TEXT PRIMARY KEY" +
 		AccountEntry.COLUMN_NAME_BANK_NAME + " TEXT, " +
 		AccountEntry.COLUMN_NAME_ACCOUNT_HOLDER_NAME +" TEXT, " +
 		AccountEntry.COLUMN_NAME_BALANCE + " DECIMAL(10,2));";
