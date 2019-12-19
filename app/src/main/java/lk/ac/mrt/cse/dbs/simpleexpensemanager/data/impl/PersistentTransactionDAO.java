@@ -25,19 +25,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.SimpleFormatter;
 
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.TransactionDAO;
-import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.contract.TransactionContract;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.contract.TransactionContract.TransactionEntry;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Transaction;
 
-/**
- * This is an In-Memory implementation of TransactionDAO interface. This is not a persistent storage. All the
- * transaction logs are stored in a LinkedList in memory.
- */
+
 public class PersistentTransactionDAO implements TransactionDAO {
     private SQLiteOpenHelper dbHelper;
 
@@ -48,15 +43,16 @@ public class PersistentTransactionDAO implements TransactionDAO {
     @Override
     public void logTransaction(Date date, String accountNo, ExpenseType expenseType, double amount) {
         SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        String dateString = (new SimpleDateFormat("yyyy-mm-dd")).format(date);
+        String dateString = (new SimpleDateFormat("yyyy-MM-dd")).format(date);
 
         ContentValues values = new ContentValues();
-        values.put(TransactionContract.TransactionEntry.COLUMN_NAME_ACCOUNT_NO, accountNo);
-        values.put(TransactionContract.TransactionEntry.COLUMN_NAME_TRANSACTION_DATE, dateString);
-        values.put(TransactionContract.TransactionEntry.COLUMN_NAME_EXPENSE_TYPE, expenseType.toString());
-        values.put(TransactionContract.TransactionEntry.COLUMN_NAME_AMOUNT, amount);
 
-        db.insert(TransactionContract.TransactionEntry.TABLE_NAME, null, values);
+        values.put(TransactionEntry.COLUMN_NAME_ACCOUNT_NO, accountNo);
+        values.put(TransactionEntry.COLUMN_NAME_TRANSACTION_DATE, dateString);
+        values.put(TransactionEntry.COLUMN_NAME_EXPENSE_TYPE, expenseType.toString());
+        values.put(TransactionEntry.COLUMN_NAME_AMOUNT, amount);
+
+        db.insert(TransactionEntry.TABLE_NAME, null, values);
     }
 
     private List<Transaction> getTransactionLogs(int count){
@@ -64,17 +60,17 @@ public class PersistentTransactionDAO implements TransactionDAO {
         ArrayList<Transaction> transactions = new ArrayList<>();
 
         String[] projection = {
-                TransactionContract.TransactionEntry.COLUMN_NAME_ACCOUNT_NO,
-                TransactionContract.TransactionEntry.COLUMN_NAME_TRANSACTION_DATE,
-                TransactionContract.TransactionEntry.COLUMN_NAME_EXPENSE_TYPE,
-                TransactionContract.TransactionEntry.COLUMN_NAME_AMOUNT
+                TransactionEntry.COLUMN_NAME_ACCOUNT_NO,
+                TransactionEntry.COLUMN_NAME_TRANSACTION_DATE,
+                TransactionEntry.COLUMN_NAME_EXPENSE_TYPE,
+                TransactionEntry.COLUMN_NAME_AMOUNT
         };
 
-        String orderBy = TransactionContract.TransactionEntry.COLUMN_NAME_TRANSACTION_DATE + " DESC";
+        String orderBy = TransactionEntry.COLUMN_NAME_TRANSACTION_DATE + " DESC";
         String limit = (count > 0) ? String.valueOf(count) : null;
 
         Cursor cursor = db.query(
-                TransactionContract.TransactionEntry.TABLE_NAME,
+                TransactionEntry.TABLE_NAME,
                 projection,
                 null,
                 null,
@@ -86,7 +82,7 @@ public class PersistentTransactionDAO implements TransactionDAO {
 
         while(cursor.moveToNext()){
             String expenseTypeString = cursor.getString(cursor.getColumnIndexOrThrow(
-                    TransactionContract.TransactionEntry.COLUMN_NAME_EXPENSE_TYPE
+                    TransactionEntry.COLUMN_NAME_EXPENSE_TYPE
             ));
 
             ExpenseType expenseType = (expenseTypeString.equals("EXPENSE")) ?
@@ -95,9 +91,9 @@ public class PersistentTransactionDAO implements TransactionDAO {
             Date date = new Date();
 
             try{
-                date = (new SimpleDateFormat("yyyy-mm-dd")).parse(
+                date = (new SimpleDateFormat("yyyy-MM-dd")).parse(
                         cursor.getString(cursor.getColumnIndexOrThrow(
-                                TransactionContract.TransactionEntry.COLUMN_NAME_TRANSACTION_DATE
+                                TransactionEntry.COLUMN_NAME_TRANSACTION_DATE
                         )));
             }
             catch(ParseException parseException){
@@ -105,11 +101,11 @@ public class PersistentTransactionDAO implements TransactionDAO {
             }
 
             String accountNo = cursor.getString(cursor.getColumnIndexOrThrow(
-                    TransactionContract.TransactionEntry.COLUMN_NAME_ACCOUNT_NO
+                    TransactionEntry.COLUMN_NAME_ACCOUNT_NO
             ));
 
             double amount = cursor.getDouble(cursor.getColumnIndexOrThrow(
-                    TransactionContract.TransactionEntry.COLUMN_NAME_AMOUNT
+                    TransactionEntry.COLUMN_NAME_AMOUNT
             ));
 
             transactions.add(new Transaction(date, accountNo,expenseType,amount));

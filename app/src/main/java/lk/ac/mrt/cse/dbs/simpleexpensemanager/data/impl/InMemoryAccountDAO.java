@@ -77,7 +77,7 @@ public class InMemoryAccountDAO implements AccountDAO {
             throw new InvalidAccountException(msg);
         }
         Account account = accounts.get(accountNo);
-        // specific implementation based on the transaction type
+
         switch (expenseType) {
             case EXPENSE:
                 account.setBalance(account.getBalance() - amount);

@@ -16,11 +16,11 @@ public final class TransactionContract {
 
         public static final String SQL_CREATE_TABLE = "CREATE TABLE " +
                 TransactionEntry.TABLE_NAME + " ( " +
-                TransactionEntry._ID + "INTEGER PRIMARY KEY, " +
+                TransactionEntry._ID + " INTEGER PRIMARY KEY, " +
                 TransactionEntry.COLUMN_NAME_ACCOUNT_NO + " TEXT, " +
                 TransactionEntry.COLUMN_NAME_AMOUNT +" DECIMAL(10,2), " +
                 TransactionEntry.COLUMN_NAME_EXPENSE_TYPE + " VARCHAR(255), " +
-                TransactionEntry.COLUMN_NAME_TRANSACTION_DATE + " DATE);";
+                TransactionEntry.COLUMN_NAME_TRANSACTION_DATE + " TEXT);";
 
         public static final String SQL_DELETE_TABLE =
                 "DROP TABLE IF EXISTS " + TransactionEntry.TABLE_NAME;
